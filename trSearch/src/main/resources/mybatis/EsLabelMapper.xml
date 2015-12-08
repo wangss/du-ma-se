@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="EsLabelMapper">
+
+
+    <resultMap type="label" id="labelResult">
+        <id property="id" column="id" />
+        <result property="uid" column="uid" />
+        <result property="labelName" column="label_name" />
+        <result property="labelDetail" column="label_detail" />
+        <result property="positionType" column="position_type" />
+
+        <result property="longitude" column="longitude" />
+        <result property="latitude" column="latitude" />
+        <result property="geohash" column="geohash" />
+        <result property="area" column="area" />
+
+
+        <result property="zan" column="zan" />
+    </resultMap>
+
+
+    <!-- 查询标签 -->
+    <select id="selectLabelById" parameterType="long" resultMap="labelResult">
+        SELECT id,
+                uid,
+                label_name,
+                label_detail,
+                zan,
+                longitude,
+                latitude,
+                geohash,
+                area,
+                position_type
+        from tb_label
+        WHERE id = #{id}
+    </select>
+
+    <!-- 查询标签 -->
+    <select id="selectLabel" parameterType="label" resultMap="labelResult">
+        SELECT id,
+                uid,
+                label_name,
+                label_detail,
+                zan,
+                longitude,
+                latitude,
+                geohash,
+                area,
+                position_type
+        from tb_label
+        WHERE 1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="status != null">AND  status = #{status}</if>
+
+    </select>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserRefuseMapper">
+
+    <resultMap type="userRefuse" id="userRefuseResult">
+        <result property="uid" column="uid" />
+        <result property="refuseUid" column="refuse_uid" />
+        <result property="isRefused" column="is_refused" />
+        <result property="addTime" column="add_time" />
+        <result property="msg" column="msg" />
+
+    </resultMap>
+
+
+    <!-- 添加用户详细信息 -->
+    <insert id="insertUserRefuse" keyProperty="uid" parameterType="userRefuse">
+        INSERT INTO tb_user_refuse (
+        uid, refuse_uid, is_refused, add_time, msg
+        )VALUES(
+        #{uid}, #{refuseUid}, #{isRefused}, now(), #{msg})
+    </insert>
+
+    <!-- 物理删除  -->
+    <delete id="deleteUserRefuse" parameterType="userRefuse">
+        delete from tb_user_refuse
+        where uid = #{uid}
+        <if test="refuseUid != null">AND  refuse_uid = #{refuseUid}</if>
+
+    </delete>
+
+    <select id="selectUserRefuse" parameterType="userRefuse" resultMap="userRefuseResult">
+        SELECT uid, refuse_uid
+        FROM tb_user_refuse
+        where uid = #{uid}
+        <if test="refuseUid != null">AND  refuse_uid = #{refuseUid}</if>
+
+    </select>
+
+</mapper>

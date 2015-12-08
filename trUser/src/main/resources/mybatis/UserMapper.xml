@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserMapper">
+
+
+    <resultMap type="user" id="userResult">
+        <id property="id" column="id" />
+        <result property="trId" column="tr_id" />
+        <result property="phone" column="phone" />
+        <result property="registerPhone" column="register_phone" />
+        <result property="areaCode" column="area_code" />
+        <result property="password" column="password" />
+
+        <result property="createTime" column="create_time" />
+        <result property="deviceType" column="device_type" />
+        <result property="uuid" column="uuid" />
+        <result property="ip" column="ip" />
+
+
+        <result property="longitude" column="longitude" />
+        <result property="latitude" column="latitude" />
+        <result property="geohash" column="geohash" />
+        <result property="area" column="area" />
+        <result property="status" column="status" />
+        <result property="statusNote" column="status_note" />
+        <result property="easemobStatus" column="easemob_status" />
+
+
+        <result property="accountUpdateTime" column="account_update_time" />
+        <result property="accountUpdateMsg" column="account_update_msg" />
+        <result property="userType" column="user_type" />
+
+
+    </resultMap>
+    <resultMap type="userInfo" id="userInfoResult" extends="userResult">
+        <id property="uid" column="uid" />
+
+        <result property="nickname" column="nickname" />
+        <result property="birthday" column="birthday" />
+        <result property="gender" column="gender" />
+        <result property="email" column="email" />
+        <result property="weChat" column="wechat" />
+        <result property="qq" column="qq" />
+        <result property="astrology" column="astrology" />
+        <result property="relationship" column="relationship" />
+        <result property="hometown" column="hometown" />
+        <result property="region" column="region" />
+        <result property="school" column="school" />
+        <result property="homepage" column="homepage" />
+        <result property="avatar" column="avatar" />
+
+        <result property="job" column="job" />
+        <result property="hobby" column="hobby" />
+        <result property="signature" column="signature" />
+
+        <result property="privacyFind" column="privacy_find" />
+        <result property="privacyStrangerTalk" column="privacy_stranger_talk" />
+
+        <result property="infoUpdateTime" column="info_update_time" />
+        <result property="infoUpdateMsg" column="info_update_msg" />
+
+    </resultMap>
+
+
+
+    <select id="getUserId" resultType="long">
+        select _nextval('seq_tb_user_id')
+    </select>
+
+    <select id="selectUserHeadId" resultType="long">
+        select _nextval('seq_tb_user_head_id')
+    </select>
+
+    <select id="selectLabelMediaId" resultType="long">
+        select _nextval('seq_tb_label_media_id')
+    </select>
+
+    <select id="selectAskingMediaId" resultType="long">
+        select _nextval('seq_tb_asking_media_id')
+    </select>
+
+    <!-- 添加用户账户 -->
+    <insert id="insertUser" keyProperty="id" parameterType="user">
+
+        INSERT INTO tb_user (
+              id, tr_id, phone, register_phone, area_code, password, create_time, device_type,
+              uuid, ip, longitude, latitude, geohash, area, status,user_type, status_note, easemob_status, account_update_time, account_update_msg
+        )VALUES(
+              #{id}, #{trId}, #{phone}, #{registerPhone}, #{areaCode}, #{password}, now(),#{deviceType},
+              #{uuid}, #{ip},#{longitude}, #{latitude}, #{geohash}, #{area}, #{status}, #{userType},  #{statusNote}, #{easemobStatus}, now(), #{accountUpdateMsg}
+        )
+    </insert>
+
+
+
+    <!-- 查询用账号 -->
+    <select id="selectUserById" parameterType="long" resultMap="userResult">
+        SELECT id, tr_id, phone, area_code, password, create_time, status, user_type, easemob_status
+        FROM tb_user
+        WHERE  id = #{id}
+    </select>
+
+    <!-- 查询用账号 -->
+    <select id="selectUser" parameterType="user" resultMap="userResult">
+        SELECT id, tr_id, phone,area_code, password, create_time, status, easemob_status, user_type
+        FROM tb_user
+        WHERE 1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="phone != null">AND  phone = #{phone}</if>
+        <if test="areaCode != null">AND  area_code = #{areaCode}</if>
+        <if test="trId != null">AND  tr_id = #{trId}</if>
+        <if test="userType != null">AND  user_type = #{userType}</if>
+        <if test="password != null">AND  password = #{password}</if>
+
+    </select>
+
+    <!-- 查询用账号 -->
+    <select id="selectUserId" parameterType="user" resultMap="userResult">
+        SELECT id
+        FROM tb_user
+        WHERE 1=1
+        <if test="phone != null">AND  phone = #{phone}</if>
+        <if test="areaCode != null">AND  area_code = #{areaCode}</if>
+    </select>
+
+
+    <!-- 修改用户帐户信息 如 手机号， 密码， trId等 -->
+    <update id="updateUser" parameterType="user">
+        UPDATE tb_user
+        <set>
+            <if test="phone != null">              phone     =    #{phone},</if>
+            <if test="areaCode != null">        area_code     =    #{areaCode},</if>
+            <if test="trId != null">               tr_id     =    #{trId},</if>
+            <if test="password != null">           password  =    #{password},</if>
+            <if test="accountUpdateMsg != null">  account_update_msg = #{accountUpdateMsg},</if>
+            <if test="status != null">           status  =    #{status},</if>
+            <if test="userType != null">        user_type  =    #{userType},</if>
+            <if test="true"> account_update_time = now()</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 修改用户帐户信息 如 手机号， 密码， trId等 -->
+    <update id="updateUserTrId" parameterType="user">
+        UPDATE tb_user
+        set
+        tr_id= #{trId},
+        account_update_time = now()
+        WHERE id = #{id}
+    </update>
+
+
+    <update id="updatePasswordByPhone" keyProperty="id" parameterType="user">
+        UPDATE tb_user
+        set
+        password= #{password},
+        account_update_time = now()
+        WHERE phone = #{phone} and area_code = #{areaCode}
+    </update>
+
+
+
+    <!-- ############# 以下是userInfo ############################################################################## -->
+
+    <!-- 添加用户详细信息 -->
+    <insert id="insertUserInfo" keyProperty="uid" parameterType="userInfo">
+        INSERT INTO tb_user_info (
+        uid, nickname, birthday, gender, email, wechat, qq, astrology, relationship,
+        hometown, region, school, homepage, avatar, job, hobby, signature, privacy_find, privacy_stranger_talk, info_update_time, info_update_msg
+        )VALUES(
+        #{id}, #{nickname}, #{birthday}, #{gender}, #{email}, #{weChat}, #{qq}, #{astrology}, #{relationship},
+        #{hometown}, #{region}, #{school}, #{homepage}, #{avatar}, #{job}, #{hobby}, #{signature}, #{privacyFind}, #{privacyStrangerTalk}, now(), #{infoUpdateMsg}
+        )
+    </insert>
+
+
+
+    <!-- 查询用户详情 -->
+    <select id="selectUserInfoById" parameterType="long" resultMap="userInfoResult">
+        SELECT u.id, u.tr_id, u.phone, u.area_code, u.password, u.create_time, u.status, u.easemob_status,u.user_type,
+        ui.uid, ui.nickname, ui.birthday, ui.gender, ui.email, ui.wechat, ui.qq, ui.astrology, ui.relationship,
+        ui.hometown, ui.region, ui.school, ui.homepage, ui.avatar, ui.job, ui.hobby, ui.signature, ui.privacy_find, ui.privacy_stranger_talk, ui.info_update_time
+        FROM tb_user u, tb_user_info ui
+        WHERE  u.id = ui.uid and u.id = #{id}
+
+    </select>
+
+
+    <!-- 查询用户详情 -->
+    <select id="selectUserInfo" parameterType="user" resultMap="userInfoResult">
+        SELECT u.id, u.tr_id, u.phone, u.area_code, u.password, u.create_time, u.status, u.easemob_status,u.user_type,
+        ui.uid, ui.nickname, ui.birthday, ui.gender, ui.email, ui.wechat, ui.qq, ui.astrology, ui.relationship,
+        ui.hometown, ui.region, ui.school, ui.homepage, ui.avatar, ui.job, ui.hobby, ui.signature, ui.privacy_find, ui.privacy_stranger_talk, ui.info_update_time
+        FROM tb_user u, tb_user_info ui
+        WHERE u.id = ui.uid
+        <if test="id != null">AND  u.id = #{id}</if>
+        <if test="id != null">AND  ui.uid = #{id}</if>
+        <if test="phone != null">AND  u.phone = #{phone}</if>
+        <if test="areaCode != null">AND  u.area_code = #{areaCode}</if>
+        <if test="trId != null">AND  u.tr_id = #{trId}</if>
+        <if test="userType != null">AND  u.user_type = #{userType}</if>
+
+    </select>
+
+    <!-- 修改用户资料 -->
+    <update id="updateUserInfo" parameterType="userInfo">
+        UPDATE tb_user_info
+        <set>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="gender != null">gender = #{gender},</if>
+
+            <if test="email != null">email = #{email},</if>
+            <if test="weChat != null">wechat = #{weChat},</if>
+            <if test="qq != null">qq = #{qq},</if>
+
+            <if test="astrology != null">astrology = #{astrology},</if>
+            <if test="relationship != null">relationship = #{relationship},</if>
+            <if test="hometown != null">hometown = #{hometown},</if>
+            <if test="region != null">region = #{region},</if>
+            <if test="school != null">school = #{school},</if>
+            <if test="homepage != null">homepage = #{homepage},</if>
+
+            <if test="avatar != null">avatar = #{avatar},</if>
+
+            <if test="job != null">job = #{job},</if>
+            <if test="hobby != null">hobby = #{hobby},</if>
+            <if test="signature != null">signature = #{signature},</if>
+
+            <if test="privacyFind != null">privacy_find = #{privacyFind},</if>
+            <if test="privacyStrangerTalk != null">privacy_stranger_talk = #{privacyStrangerTalk},</if>
+            <if test="infoUpdateMsg != null">info_update_msg = #{infoUpdateMsg},</if>
+
+            <if test="true">info_update_time = now()</if>
+
+        </set>
+        WHERE uid = #{uid}
+    </update>
+
+
+    <!-- 分页查询  -->
+
+    <select id="userInfoCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+
+        SELECT count(*)
+        FROM tb_user u, tb_user_info ui
+        WHERE  ui.uid = u.id
+        <if test="id != null">AND  u.id = #{id}</if>
+        <if test="uid != null">AND  u.id = #{uid}</if>
+        <if test="uid != null">AND  ui.uid = #{uid}</if>
+        <if test="phone != null">AND  u.phone = #{phone}</if>
+        <if test="areaCode != null">AND  u.area_code = #{areaCode}</if>
+        <if test="trId != null">AND  u.tr_id = #{trId}</if>
+        <if test="status != null">AND  u.status = #{status}</if>
+        <if test="userType != null">AND  u.user_type = #{userType}</if>
+        <if test="nickname != null">AND  ui.nickname like CONCAT('%',#{nickname},'%' )</if>
+
+    </select>
+
+    <select id="userInfoList" parameterType="java.util.Map" resultMap="userInfoResult">
+        SELECT u.id, u.tr_id, u.phone, u.area_code, u.create_time, u.status, u.easemob_status,user_type,
+        ui.uid, ui.nickname
+        FROM tb_user u, tb_user_info ui
+        WHERE  ui.uid = u.id
+        <if test="id != null">AND  u.id = #{id}</if>
+        <if test="uid != null">AND  u.id = #{uid}</if>
+        <if test="uid != null">AND  ui.uid = #{uid}</if>
+        <if test="phone != null">AND  u.phone = #{phone}</if>
+        <if test="areaCode != null">AND  u.area_code = #{areaCode}</if>
+        <if test="trId != null">AND  u.tr_id = #{trId}</if>
+        <if test="status != null">AND  u.status = #{status}</if>
+        <if test="userType != null">AND  u.user_type = #{userType}</if>
+
+        <if test="nickname != null">AND  ui.nickname like CONCAT('%',#{nickname},'%' )</if>
+
+        ORDER BY u.id DESC
+        limit #{start_row}, #{page_size}
+
+    </select>
+
+
+</mapper>

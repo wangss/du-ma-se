@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LabelMapper">
+
+
+    <resultMap type="label" id="labelResult">
+        <id property="id" column="id" />
+        <result property="uid" column="uid" />
+        <result property="labelName" column="label_name" />
+        <result property="labelDetail" column="label_detail" />
+
+        <result property="addTime" column="add_time" />
+        <result property="editTime" column="edit_time" />
+
+        <result property="longitude" column="longitude" />
+        <result property="latitude" column="latitude" />
+        <result property="geohash" column="geohash" />
+        <result property="area" column="area" />
+
+        <result property="positionType" column="position_type" />
+        <result property="deadlineType" column="deadline_type" />
+
+        <result property="startTime" column="start_time" />
+        <result property="endTime" column="end_time" />
+        <result property="zan" column="zan" />
+        <result property="haveZan" column="have_zan" />
+        <result property="msg" column="msg" />
+        <result property="status" column="status" />
+
+    </resultMap>
+
+    <select id="selectLabelId" resultType="long">
+        select _nextval('seq_tb_label_id')
+    </select>
+
+    <!-- 添加标签 -->
+    <insert id="insertLabel" keyProperty="id" parameterType="label">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            select _nextval('seq_tb_label_id')
+        </selectKey>
+
+        INSERT INTO tb_label (
+              id, uid, label_name, label_detail, add_time, edit_time, longitude, latitude, geohash, area,
+              position_type, deadline_type, start_time, end_time, zan,  msg, status
+        )VALUES(
+              #{id}, #{uid}, #{labelName}, #{labelDetail}, now(), #{editTime}, #{longitude}, #{latitude}, #{geohash}, #{area},
+              #{positionType}, #{deadlineType}, #{startTime}, #{endTime}, #{zan}, #{msg}, #{status}
+        )
+    </insert>
+
+
+    <!-- 查询标签 -->
+    <select id="selectLabelById" parameterType="long" resultMap="labelResult">
+        SELECT
+                l.id, l.uid, l.label_name, l.label_detail, l.add_time, l.edit_time, l.longitude, l.latitude, l.geohash, l.area,
+                l.position_type, l.deadline_type, l.start_time, l.end_time, l.zan,  l.msg, l.status
+            <if test="zanUid != null">,  z.have_zan</if>
+        FROM tb_label l
+            <if test="zanUid != null">left join tb_label_zan z on  z.label_id = l.id</if>
+        WHERE l.id = #{id}
+
+    </select>
+
+    <!-- 查询标签 -->
+    <select id="selectLabel" parameterType="label" resultMap="labelResult">
+        SELECT
+                l.id, l.uid, l.label_name, l.label_detail, l.add_time, l.edit_time, l.longitude, l.latitude, l.geohash, l.area,
+                l.position_type, l.deadline_type, l.start_time, l.end_time, l.zan,  l.msg, l.status
+            <if test="zanUid != null">,  z.have_zan</if>
+        FROM tb_label l
+            <if test="zanUid != null">left join tb_label_zan z on  z.label_id = l.id and z.uid = #{zanUid}</if>
+        WHERE 1=1
+        <if test="id != null">AND  l.id = #{id}</if>
+        <if test="uid != null">AND  l.uid = #{uid}</if>
+        <if test="status != null">AND  l.status = #{status}</if>
+        ORDER BY l.id DESC
+    </select>
+
+    <!-- 修改标签 -->
+    <update id="updateLabel" parameterType="label">
+        UPDATE tb_label
+        <set>
+            <if test="labelName != null">      label_name     =    #{labelName},</if>
+            <if test="labelDetail != null">    label_detail    =    #{labelDetail},</if>
+            <if test="longitude != null">      longitude   =    #{longitude},</if>
+            <if test="latitude != null">       latitude    =    #{latitude},</if>
+            <if test="geohash != null">        geohash     =    #{geohash},</if>
+            <if test="area != null">           area        =     #{area},</if>
+
+            <if test="positionType != null">  position_type  =    #{positionType},</if>
+            <if test="deadlineType != null">  deadline_type  =    #{deadlineType},</if>
+            <if test="startTime != null">     start_time  =    #{startTime},</if>
+            <if test="endTime != null">       end_time    =     #{endTime},</if>
+
+            <if test="zan != null">            zan    =    #{zan},</if>
+            <if test="msg != null">            msg    =    #{msg},</if>
+            <if test="status != null">        status  =    #{status},</if>
+            <if test="true"> edit_time = now()</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 修改标签赞 -->
+    <update id="updateLabelZan" parameterType="labelZan">
+        UPDATE tb_label
+        SET zan = zan + #{action}
+        WHERE id = #{labelId}
+    </update>
+
+    <!-- 物理删除  -->
+    <delete id="deleteLabelById" parameterType="long">
+        delete from tb_label
+        where id = #{id}
+
+    </delete>
+
+    <!-- 物理删除  -->
+    <delete id="deleteLabelByUid" parameterType="long">
+        delete from tb_label
+        where uid = #{uid}
+    </delete>
+
+
+
+    <!-- 分页查询  -->
+
+    <select id="labelCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+
+        SELECT count(*)
+        FROM tb_label
+        WHERE  1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="labelName != null">AND  label_name like CONCAT('%',#{labelName},'%' )</if>
+        <if test="status != null">AND  status = #{status}</if>
+    </select>
+
+    <select id="labelList" parameterType="java.util.Map" resultMap="labelResult">
+        SELECT  id, uid, label_name, add_time, longitude, latitude, position_type, status
+        FROM tb_label
+        WHERE  1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="labelName != null">AND  label_name like CONCAT('%',#{labelName},'%' )</if>
+        <if test="status != null">AND  status = #{status}</if>
+
+        ORDER BY id DESC
+
+        limit #{start_row}, #{page_size}
+
+    </select>
+
+
+</mapper>

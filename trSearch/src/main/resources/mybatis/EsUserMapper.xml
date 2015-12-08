@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="EsUserMapper">
+
+    <resultMap type="userInfo" id="userInfoResult">
+
+        <id property="uid" column="uid" />
+        <result property="id" column="id" />
+        <result property="trId" column="tr_id" />
+        <result property="phone" column="phone"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="createTime" column="create_time" />
+
+        <result property="nickname" column="nickname" />
+        <result property="birthday" column="birthday" />
+        <result property="gender" column="gender" />
+        <result property="avatar" column="avatar" />
+        <result property="signature" column="signature" />
+
+        <result property="longitude" column="longitude" />
+        <result property="latitude" column="latitude" />
+        <result property="geohash" column="geohash" />
+        <result property="area" column="area" />
+
+        <result property="privacyFind" column="privacy_find" />
+
+    </resultMap>
+
+    <!-- 查询用户详情 -->
+    <select id="selectUserInfoById" parameterType="long" resultMap="userInfoResult">
+        SELECT
+          u.id, u.tr_id, phone, u.area_code, u.create_time,u.longitude, u.latitude, u.geohash, u.area,
+          ui.uid, ui.nickname, ui.birthday, ui.gender, ui.avatar, ui.signature, ui.privacy_find
+        FROM tb_user u, tb_user_info ui
+        WHERE  u.id = ui.uid and u.id = #{id}
+
+    </select>
+
+
+    <!-- 查询用户详情 -->
+    <select id="selectUserInfo" parameterType="userInfo" resultMap="userInfoResult">
+        SELECT
+        u.id, u.tr_id,u.phone,u.area_code, u.create_time,u.longitude, u.latitude, u.geohash, u.area,
+        ui.uid, ui.nickname, ui.birthday, ui.gender, ui.avatar, ui.signature, ui.privacy_find
+        FROM tb_user u, tb_user_info ui
+        WHERE u.id = ui.uid
+        <if test="id != null">AND  u.id = #{id}</if>
+        <if test="phone != null">AND  u.phone = #{phone}</if>
+        <if test="areaCode != null">AND  u.area_code = #{areaCode}</if>
+        <if test="trId != null">AND  u.tr_id = #{trId}</if>
+
+    </select>
+
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserReportMapper">
+
+    <resultMap type="userReport" id="userReportResult">
+        <id property="id" column="id"/>
+        <result property="uid" column="uid" />
+        <result property="defendant" column="defendant" />
+        <result property="reason" column="reason" />
+        <result property="reasonMsg" column="reason_msg" />
+
+        <result property="reportTime" column="report_time" />
+        <result property="editTime" column="edit_time" />
+        <result property="status" column="status" />
+        <result property="haveNoticed" column="have_noticed" />
+
+        <result property="msg" column="msg" />
+
+    </resultMap>
+
+
+    <!-- 添加用户详细信息 -->
+    <insert id="insertUserReport" keyProperty="id" parameterType="userReport">
+
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            select _nextval('seq_tb_user_report_id')
+        </selectKey>
+
+        INSERT INTO tb_user_report (
+        id, uid, defendant, reason, reason_msg, report_time, edit_time, status, have_noticed, msg
+        )VALUES(
+        #{id}, #{uid}, #{defendant}, #{reason}, #{reasonMsg}, now(), #{editTime}, #{status}, #{haveNoticed}, #{msg})
+    </insert>
+
+
+    <!-- 修改标签 -->
+    <select id="selectUserReport" parameterType="userReport" resultMap="userReportResult">
+        SELECT id, uid, defendant, reason, reason_msg, report_time, edit_time, status, have_noticed, msg
+        FROM  tb_user_report
+        WHERE  1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="defendant != null">AND  defendant = #{defendant}</if>
+        <if test="reason != null">AND  reason = #{reason}</if>
+        <if test="status != null">AND  status = #{status}</if>
+
+    </select>
+
+    <!-- 修改标签 -->
+    <update id="updateUserReport" parameterType="userReport">
+        UPDATE tb_user_report
+        <set>
+            <if test="status != null">      status     =    #{status},</if>
+            <if test="haveNoticed != null">  have_noticed  =   #{haveNoticed},</if>
+            <if test="msg != null">            msg    =    #{msg},</if>
+            <if test="operator != null">      operator    =    #{operator},</if>
+            <if test="true"> edit_time = now()</if>
+        </set>
+
+        WHERE id = #{id}
+    </update>
+
+
+
+    <!-- 分页查询  -->
+
+    <select id="userReportCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+
+        SELECT count(*)
+        FROM tb_user_report
+        WHERE  1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="defendant != null">AND  defendant = #{defendant}</if>
+        <if test="reason != null">AND  reason = #{reason}</if>
+        <if test="status != null">AND  status = #{status}</if>
+    </select>
+
+    <select id="userReportList" parameterType="java.util.Map" resultMap="userReportResult">
+        SELECT id, uid, defendant, reason, report_time, status
+        FROM tb_user_report
+        WHERE  1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="defendant != null">AND  defendant = #{defendant}</if>
+        <if test="reason != null">AND  reason = #{reason}</if>
+        <if test="status != null">AND  status = #{status}</if>
+
+        ORDER BY id DESC
+
+        limit #{start_row}, #{page_size}
+
+    </select>
+
+
+</mapper>

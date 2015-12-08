@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+
+
+    <settings>
+         <setting name="logImpl" value="LOG4J"/>
+        <!--<setting name="logImpl" value="SLF4J"/>-->
+
+    </settings>
+
+    <!-- 别名 -->
+    <typeAliases>
+        <typeAlias alias="label" type="com.taoren.model.lb.Label"/>
+        <typeAlias alias="labelMedia" type="com.taoren.model.lb.LabelMedia"/>
+        <typeAlias alias="labelZan" type="com.taoren.model.lb.LabelZan"/>
+        <typeAlias alias="labelZanUser" type="com.taoren.model.lb.LabelZanUser"/>
+
+        <typeAlias alias="labelComment" type="com.taoren.model.lb.LabelComment"/>
+
+        <typeAlias alias="asking" type="com.taoren.model.ask.Asking"/>
+        <typeAlias alias="askingMedia" type="com.taoren.model.ask.AskingMedia"/>
+        <typeAlias alias="askingReply" type="com.taoren.model.ask.AskingReply"/>
+    </typeAliases>
+
+    <mappers>
+        <mapper resource="mybatis/LabelMapper.xml"/>
+        <mapper resource="mybatis/LabelMediaMapper.xml"/>
+        <mapper resource="mybatis/LabelZanMapper.xml"/>
+
+        <mapper resource="mybatis/LabelCommentMapper.xml"/>
+
+        <mapper resource="mybatis/AskingMapper.xml"/>
+        <mapper resource="mybatis/AskingMediaMapper.xml"/>
+        <mapper resource="mybatis/AskingReplyMapper.xml"/>
+    </mappers>
+
+</configuration>

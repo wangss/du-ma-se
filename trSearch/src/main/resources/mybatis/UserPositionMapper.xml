@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserPositionMapper">
+
+    <resultMap type="userPosition" id="userPositionResult">
+        <id property="uid" column="uid" />
+        <result property="nickname" column="nickname" />
+        <result property="birthday" column="birthday" />
+        <result property="gender" column="gender" />
+        <result property="avatar" column="avatar" />
+        <result property="signature" column="signature" />
+        <result property="area" column="area" />
+        <result property="longitude" column="longitude" />
+        <result property="latitude" column="latitude" />
+        <result property="geohash" column="geohash" />
+
+        <result property="activeTime" column="active_time" />
+
+    </resultMap>
+
+
+    <!-- 添加用户详细信息 -->
+    <insert id="insertUserPosition" keyProperty="uid" parameterType="userPosition">
+        INSERT INTO tb_user_position (
+        uid, area, longitude, latitude, geohash, active_time
+        )VALUES(
+        #{uid}, #{area}, #{longitude}, #{latitude}, #{geohash}, #{activeTime})
+    </insert>
+
+    <update id="updateUserPosition" parameterType="userPosition">
+        UPDATE tb_user_position
+        <set>
+            <if test="area      != null">  area      =    #{area},</if>
+            <if test="longitude != null">  longitude =    #{longitude},</if>
+            <if test="latitude  != null">  latitude  =    #{latitude},</if>
+            <if test="geohash   != null">  geohash   =    #{geohash},</if>
+            <if test="activeTime != null"> active_time =  #{activeTime}</if>
+        </set>
+        WHERE uid = #{uid}
+    </update>
+
+    <!-- 查询用户详情 -->
+    <select id="selectUserPositionByUid" parameterType="long" resultMap="userPositionResult">
+        SELECT
+                up.uid,
+                up.area,
+                up.longitude,
+                up.latitude,
+                up.geohash,
+                up.active_time
+        FROM  tb_user_position up
+        WHERE  up.uid = #{uid}
+
+    </select>
+
+    <!-- 查询用户详情 -->
+    <select id="selectUserPosition" parameterType="userPosition" resultMap="userPositionResult">
+        SELECT
+                up.uid,
+                up.area,
+                up.longitude,
+                up.latitude,
+                up.geohash,
+                up.active_time
+        FROM tb_user_position up
+        <if test="uid != null">AND  up.uid = #{uid}</if>
+
+    </select>
+
+</mapper>

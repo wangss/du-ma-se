@@ -1,0 +1,16 @@
+
+curl -PUT http://127.0.0.1:9200/estaoren/esuser/_mapping -d '
+{
+    "esuser" : {
+        "properties" : {
+            "phone" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            },
+            "trId" : {
+                "type" : "string",
+                "index" : "not_analyzed"
+            }
+        }
+    }
+}'

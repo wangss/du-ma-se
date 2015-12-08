@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="dubbo-server-user"/>
+
+    <!-- 使用multicast广播注册中心暴露服务地址 -->
+    <dubbo:registry address="zookeeper://localhost:2181"/>
+    <!--<dubbo:registry address="zookeeper://120.25.224.206:2181"/>-->
+    <!--<dubbo:registry address="zookeeper://10.45.162.235:2181"/>-->
+
+    <!-- 用dubbo协议在20880端口暴露服务 -->
+    <dubbo:protocol name="dubbo" port="20881" threads="1024"/>
+
+    <!-- 声明需要暴露的服务接口 -->
+    <dubbo:service interface="com.taoren.service.user.SignUpRemoteService" ref="signUpServiceImpl" cluster="failfast" timeout="10000"/>
+    <dubbo:service interface="com.taoren.service.user.LoginRemoteService" ref="loginServiceImpl" timeout="10000"/>
+    <dubbo:service interface="com.taoren.service.user.UserRemoteService" ref="userServiceImpl" timeout="10000"/>
+    <dubbo:service interface="com.taoren.service.user.UserInfoRemoteService" ref="userInfoServiceImpl" timeout="10000"/>
+
+    <dubbo:service interface="com.taoren.service.user.MessageRemoteService" ref="messageServiceImpl" timeout="10000"/>
+
+    <dubbo:service interface="com.taoren.service.user.RelationRemoteService" ref="relationServiceImpl" timeout="5000"/>
+    <dubbo:service interface="com.taoren.service.user.UserFriendRemoteService" ref="userFriendServiceImpl" timeout="5000"/>
+    <dubbo:service interface="com.taoren.service.user.UserReportRemoteService" ref="userReportServiceImpl" timeout="5000"/>
+
+
+    <!--<dubbo:annotation package="com.taoren.*.service.impl" />-->
+
+    <dubbo:service interface="com.taoren.service.user.UploadTokenRemoteService" ref="uploadTokenServiceImpl" timeout="3000"/>
+
+
+</beans>

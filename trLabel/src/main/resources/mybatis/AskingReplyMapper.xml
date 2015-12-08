@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AskingReplyMapper">
+
+    <resultMap type="askingReply" id="askingReplyResult">
+        <id property="id" column="id" />
+        <result property="uid" column="uid" />
+        <result property="replyTo" column="reply_to" />
+        <result property="askingId" column="asking_id" />
+        <result property="replyDetail" column="reply_detail" />
+        <result property="addTime" column="add_time" />
+        <result property="editTime" column="edit_time" />
+
+        <result property="nickname" column="nickname" />
+        <result property="avatar" column="avatar" />
+        <result property="replyToNickname" column="reply_to_nickname" />
+
+    </resultMap>
+
+    <!-- 添加标签 -->
+    <insert id="insertAskingReply" keyProperty="id" parameterType="askingReply">
+
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            select _nextval('seq_tb_asking_reply_id')
+        </selectKey>
+
+        INSERT INTO tb_asking_reply (
+              id, uid, reply_to, asking_id, reply_detail, add_time, edit_time
+        )VALUES(
+              #{id}, #{uid}, #{replyTo}, #{askingId}, #{replyDetail}, now(), now()
+        )
+    </insert>
+
+
+    <!-- 查询标签 -->
+    <select id="selectAskingReply" parameterType="askingReply" resultMap="askingReplyResult">
+        SELECT id, uid, reply_to, asking_id, reply_detail, add_time, edit_time
+        FROM tb_asking_reply
+        WHERE 1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="askingId != null">AND  asking_id = #{askingId}</if>
+
+    </select>
+
+
+
+    <!-- 修改标签 -->
+    <update id="updateAskingReply" parameterType="askingReply">
+        UPDATE tb_asking_reply
+        <set>
+            <if test="replyDetail != null">        reply_detail      =    #{replyDetail},</if>
+
+            <if test="true"> edit_time = now()</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+
+
+    <!-- 删除 -->
+    <delete id="deleteAskingReplyById" parameterType="long">
+        delete from tb_asking_reply where id = #{id}
+    </delete>
+
+    <!-- 删除 -->
+    <delete id="deleteAskingReply" parameterType="askingReply">
+        delete from tb_asking_reply
+        where id = #{id}
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="askingId != null">AND  asking_id = #{askingId}</if>
+
+    </delete>
+
+
+    <!-- 分页查询  -->
+
+    <select id="askingReplyCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+
+        SELECT count(*)
+        FROM tb_asking_reply
+        WHERE  1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="askingId != null">AND  asking_id = #{askingId}</if>
+    </select>
+
+    <select id="askingReplyList" parameterType="java.util.Map" resultMap="askingReplyResult">
+        SELECT
+        ar.id,
+        ar.uid,
+        ui1.avatar,
+        ui1.nickname,
+        ui2.nickname AS reply_to_nickname,
+        ar.reply_to,
+        ar.asking_id,
+        ar.reply_detail,
+        ar.add_time,
+        ar.edit_time
+        FROM tb_asking_reply ar
+        LEFT JOIN tb_user_info ui1 ON ui1.uid = ar.uid
+        LEFT JOIN tb_user_info ui2 ON ui2.uid = ar.reply_to
+        WHERE  1=1
+        <if test="id != null">AND  ar.id = #{id}</if>
+        <if test="uid != null">AND  ar.uid = #{uid}</if>
+        <if test="askingId != null">AND  ar.asking_id = #{askingId}</if>
+
+        ORDER BY ar.id
+
+        limit #{start_row}, #{page_size}
+
+    </select>
+
+
+</mapper>

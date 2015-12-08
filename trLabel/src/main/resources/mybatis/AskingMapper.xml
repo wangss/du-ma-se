@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AskingMapper">
+
+    <resultMap type="asking" id="askingResult">
+        <id property="id" column="id" />
+        <result property="uid" column="uid" />
+        <result property="askingDetail" column="asking_detail" />
+
+        <result property="addTime" column="add_time" />
+        <result property="editTime" column="edit_time" />
+
+        <result property="longitude" column="longitude" />
+        <result property="latitude" column="latitude" />
+        <result property="geohash" column="geohash" />
+        <result property="area" column="area" />
+        <result property="replyCount" column="reply_count" />
+
+
+    </resultMap>
+
+    <select id="selectAskingId" resultType="long">
+        select _nextval('seq_tb_asking_id')
+    </select>
+
+    <!-- 添加喊话 -->
+    <insert id="insertAsking" keyProperty="id" parameterType="asking">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            select _nextval('seq_tb_asking_id')
+        </selectKey>
+
+        INSERT INTO tb_asking (
+              id, uid, asking_detail, add_time, edit_time, longitude, latitude, geohash, area, reply_count
+        )VALUES(
+              #{id}, #{uid}, #{askingDetail}, now(), #{editTime}, #{longitude}, #{latitude}, #{geohash}, #{area}, #{replyCount}
+        )
+    </insert>
+
+
+    <!-- 查询喊话 -->
+    <select id="selectAskingById" parameterType="long" resultMap="askingResult">
+        SELECT
+                id, uid, asking_detail, add_time, edit_time, longitude, latitude, geohash, area, reply_count
+        FROM tb_asking
+        WHERE id = #{id}
+
+    </select>
+
+    <!-- 查询喊话 -->
+    <select id="selectAsking" parameterType="asking" resultMap="askingResult">
+        SELECT
+                id, uid, asking_detail, add_time, edit_time, longitude, latitude, geohash, area, reply_count
+        FROM tb_asking
+        WHERE 1=1
+            <if test="id != null">AND  id = #{id}</if>
+            <if test="uid != null">AND  uid = #{uid}</if>
+        ORDER BY id DESC
+    </select>
+
+    <!-- 修改喊话 -->
+    <update id="updateAsking" parameterType="asking">
+        UPDATE tb_asking
+        <set>
+            <if test="askingDetail != null">    asking_detail    =    #{askingDetail},</if>
+            <if test="longitude != null">      longitude   =    #{longitude},</if>
+            <if test="latitude != null">       latitude    =    #{latitude},</if>
+            <if test="geohash != null">        geohash     =    #{geohash},</if>
+            <if test="area != null">           area        =     #{area},</if>
+            <if test="true"> edit_time = now()</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 修改喊话回复数 -->
+    <update id="updateAskingReplyCount">
+        UPDATE tb_asking
+        SET reply_count = reply_count + #{action}
+        WHERE id = #{askingId}
+    </update>
+
+    <!-- 物理删除  -->
+    <delete id="deleteAskingById" parameterType="long">
+        delete from tb_asking
+        where id = #{id}
+
+    </delete>
+
+    <!-- 物理删除  -->
+    <delete id="deleteAsking" parameterType="asking">
+        delete from tb_asking
+        where uid = #{uid} and id = #{id}
+    </delete>
+
+
+
+    <!-- 分页查询  -->
+
+    <select id="askingCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+
+        SELECT count(*)
+        FROM tb_asking
+        WHERE  1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+    </select>
+
+    <select id="askingList" parameterType="java.util.Map" resultMap="askingResult">
+        SELECT   id, uid,, add_time, edit_time, longitude, latitude, geohash, area, reply_count
+        FROM tb_asking
+        WHERE  1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+
+        ORDER BY id DESC
+
+        limit #{start_row}, #{page_size}
+
+    </select>
+
+
+</mapper>

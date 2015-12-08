@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+
+
+    <settings>
+         <setting name="logImpl" value="LOG4J"/>
+        <!--<setting name="logImpl" value="SLF4J"/>-->
+
+    </settings>
+
+    <!-- 别名 -->
+    <typeAliases>
+        <typeAlias alias="user" type="com.taoren.model.user.User"/>
+        <typeAlias alias="userInfo" type="com.taoren.model.user.UserInfo"/>
+
+        <typeAlias alias="userFriend" type="com.taoren.model.user.UserFriend"/>
+        <typeAlias alias="userReport" type="com.taoren.model.user.UserReport"/>
+        <typeAlias alias="userRefuse" type="com.taoren.model.user.UserRefuse"/>
+
+    </typeAliases>
+
+    <mappers>
+        <mapper resource="mybatis/UserMapper.xml"/>
+        <mapper resource="mybatis/UserFriendMapper.xml"/>
+        <mapper resource="mybatis/UserRefuseMapper.xml"/>
+        <mapper resource="mybatis/UserReportMapper.xml"/>
+
+    </mappers>
+
+</configuration>

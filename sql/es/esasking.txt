@@ -1,0 +1,35 @@
+curl -PUT http://127.0.0.1:9200/estaoren/esasking/_mapping -d '
+{
+    "esasking" : {
+        "_parent" : {
+            "type" : "esuser"
+        },
+        "_routing" : {
+            "required" : true
+        },
+
+        "_ttl" : {
+            "enabled" : true,
+            "default" : "0.5d"
+        },
+
+
+        "properties" : {
+            "location" : {
+                "type" : "geo_point"
+            },
+            "uid" : {
+                "type" : "string",
+                "store" : true
+            }
+        }
+    }
+}'
+
+
+
+
+
+
+
+

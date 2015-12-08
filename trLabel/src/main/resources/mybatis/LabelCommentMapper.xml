@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LabelCommentMapper">
+
+
+    <resultMap type="labelComment" id="labelCommentResult">
+        <id property="id" column="id" />
+        <result property="uid" column="uid" />
+        <result property="replyTo" column="reply_to" />
+        <result property="labelId" column="label_id" />
+        <result property="commentDetail" column="comment_detail" />
+        <result property="addTime" column="add_time" />
+        <result property="editTime" column="edit_time" />
+
+        <result property="nickname" column="nickname" />
+        <result property="avatar" column="avatar" />
+        <result property="replyToNickname" column="reply_to_nickname" />
+
+    </resultMap>
+
+
+    <!-- 添加标签 -->
+    <insert id="insertLabelComment" keyProperty="id" parameterType="labelComment">
+
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            select _nextval('seq_tb_label_comment_id')
+        </selectKey>
+
+        INSERT INTO tb_label_comment (
+              id, uid, reply_to, label_id, comment_detail, add_time, edit_time
+        )VALUES(
+              #{id}, #{uid}, #{replyTo}, #{labelId}, #{commentDetail}, now(), now()
+        )
+    </insert>
+
+
+    <!-- 查询标签 -->
+    <select id="selectLabelComment" parameterType="labelComment" resultMap="labelCommentResult">
+        SELECT id, uid, reply_to, label_id, comment_detail, add_time, edit_time
+        FROM tb_label_comment
+        WHERE 1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="labelId != null">AND  label_id = #{labelId}</if>
+
+    </select>
+
+
+
+    <!-- 修改标签 -->
+    <update id="updateLabelComment" parameterType="labelComment">
+        UPDATE tb_label_comment
+        <set>
+            <if test="commentDetail != null">        comment_detail      =    #{commentDetail},</if>
+
+            <if test="true"> edit_time = now()</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+
+
+    <!-- 删除 -->
+    <delete id="deleteLabelCommentById" parameterType="long">
+        delete from tb_label_comment where id = #{id}
+    </delete>
+
+    <!-- 删除 -->
+    <delete id="deleteLabelComment" parameterType="labelComment">
+        delete from tb_label_comment
+        where id = #{id}
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="labelId != null">AND  label_id = #{labelId}</if>
+
+    </delete>
+
+
+    <!-- 分页查询  -->
+
+    <select id="labelCommentCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+
+        SELECT count(*)
+        FROM tb_label_comment
+        WHERE  1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="uid != null">AND  uid = #{uid}</if>
+        <if test="labelId != null">AND  label_id = #{labelId}</if>
+    </select>
+
+    <select id="labelCommentList" parameterType="java.util.Map" resultMap="labelCommentResult">
+        SELECT
+                lc.id,
+                lc.uid,
+                ui1.avatar,
+                ui1.nickname,
+                ui2.nickname AS reply_to_nickname,
+                lc.reply_to,
+                lc.label_id,
+                lc.comment_detail,
+                lc.add_time,
+                lc.edit_time
+        FROM tb_label_comment lc
+        LEFT JOIN tb_user_info ui1 ON ui1.uid = lc.uid
+        LEFT JOIN tb_user_info ui2 ON ui2.uid = lc.reply_to
+        WHERE  1=1
+        <if test="id != null">AND  lc.id = #{id}</if>
+        <if test="uid != null">AND  lc.uid = #{uid}</if>
+        <if test="labelId != null">AND  lc.label_id = #{labelId}</if>
+
+        ORDER BY lc.id
+
+        limit #{start_row}, #{page_size}
+
+    </select>
+
+
+</mapper>

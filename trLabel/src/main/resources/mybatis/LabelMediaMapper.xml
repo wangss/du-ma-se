@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LabelMediaMapper">
+
+
+    <resultMap type="labelMedia" id="labelMediaResult">
+        <id property="id" column="id" />
+        <result property="labelId" column="label_id" />
+        <result property="url" column="url" />
+        <result property="mediaType" column="media_ype" />
+        <result property="addTime" column="add_time" />
+        <result property="editTime" column="edit_time" />
+        <result property="seq" column="seq" />
+        <result property="msg" column="msg" />
+        <result property="status" column="status" />
+
+    </resultMap>
+
+    <select id="selectLabelMediaId" resultType="long">
+        select _nextval('seq_tb_label_media_id')
+    </select>
+
+    <!-- 添加标签 -->
+    <insert id="insertLabelMedia" keyProperty="id" parameterType="labelMedia">
+
+        INSERT INTO tb_label_media (
+              id, label_id, url, media_type, add_time, edit_time, seq,  msg, status
+        )VALUES(
+              #{id}, #{labelId}, #{url}, #{mediaType}, now(), now(), #{seq},   #{msg}, #{status}
+        )
+    </insert>
+
+    <!-- 添加标签 -->
+    <insert id="insertLabelMediaList" keyProperty="id" parameterType="java.util.List">
+
+        INSERT INTO tb_label_media (
+           id, label_id, url, media_type, add_time, edit_time, seq,  msg, status
+        )VALUES
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.id},#{item.labelId},#{item.url},#{item.mediaType}, now(), now(), #{item.seq}, #{item.msg}, #{item.status})
+        </foreach>
+    </insert>
+
+
+
+    <!-- 查询标签 -->
+    <select id="selectLabelMediaById" parameterType="long" resultMap="labelMediaResult">
+        SELECT id, label_id, url, media_type, add_time, edit_time, seq,  msg, status
+        FROM tb_label_media
+        WHERE id = #{id}
+    </select>
+
+    <!-- 查询标签 -->
+    <select id="selectLabelMedia" parameterType="labelMedia" resultMap="labelMediaResult">
+        SELECT id, label_id, url, media_type, add_time, edit_time, seq,  msg, status
+        FROM tb_label_media
+        WHERE 1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="labelId != null">AND  label_id = #{labelId}</if>
+        <if test="status != null">AND  status = #{status}</if>
+
+    </select>
+
+    <!-- 查询标签 -->
+    <select id="selectLabelMediaList" parameterType="labelMedia" resultMap="labelMediaResult">
+        SELECT label_id, url, seq, status
+        FROM tb_label_media
+        WHERE 1=1
+        <if test="id != null">AND  id = #{id}</if>
+        <if test="labelId != null">AND  label_id = #{labelId}</if>
+        <if test="status != null">AND  status = #{status}</if>
+
+    </select>
+
+
+    <!-- 修改标签 -->
+    <update id="updateLabelMedia" parameterType="labelMedia">
+        UPDATE tb_label_media
+        <set>
+            <if test="url != null">            msg       =    #{url},</if>
+            <if test="mediaType != null">     mediaType  =    #{mediaType},</if>
+            <if test="msg != null">            msg        =    #{msg},</if>
+            <if test="status != null">        status      =    #{status},</if>
+
+            <if test="true"> edit_time = now()</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 批量修改 -->
+    <update id="updateLabelMediaList"  parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update tb_label_media
+            <set>
+                <if test="item.url != null">            url       =    #{item.url},</if>
+                <if test="item.mediaType != null">     mediaType  =    #{item.mediaType},</if>
+                <if test="item.msg != null">            msg        =    #{item.msg},</if>
+                <if test="item.status != null">        status      =    #{item.status},</if>
+
+                <if test="true"> edit_time = now()</if>
+            </set>
+            where id = ${item.id}
+        </foreach>
+
+    </update>
+
+
+    <!-- 物理删除 -->
+    <delete id="deleteLabelMedia" parameterType="long">
+        delete from tb_label_media where id = #{id}
+    </delete>
+
+
+</mapper>

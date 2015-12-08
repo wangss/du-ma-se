@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserFriendMapper">
+
+    <resultMap type="userFriend" id="userFriendResult">
+        <result property="uid" column="uid" />
+        <result property="friend" column="friend" />
+        <result property="isFriend" column="is_friend" />
+        <result property="addTime" column="add_time" />
+        <result property="msg" column="msg" />
+
+    </resultMap>
+
+
+    <!-- 添加用户详细信息 -->
+    <insert id="insertUserFriend" keyProperty="uid" parameterType="userFriend">
+        INSERT INTO tb_user_friend (
+        uid, friend, is_friend, add_time, msg
+        )VALUES(
+        #{uid}, #{friend}, #{isFriend}, now(), #{msg})
+    </insert>
+
+    <!-- 物理删除  -->
+    <delete id="deleteUserFriend" parameterType="userFriend">
+        delete from tb_user_friend
+        where uid = #{uid}
+        <if test="friend != null">AND  friend = #{friend}</if>
+
+    </delete>
+
+    <select id="selectUserFriendIds" parameterType="userFriend" resultMap="userFriendResult">
+        SELECT friend
+        FROM tb_user_friend
+        where uid = #{uid}
+        <if test="friend != null">AND  friend = #{friend}</if>
+
+    </select>
+</mapper>
